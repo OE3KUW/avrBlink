@@ -3,7 +3,7 @@
 
                                                                    қuran dez 2022
 **************************************************************************************/
-// 328p16m_programmer meldet häufig Fehler - doch das PGM ist korrekt im ATmega ... 
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
 // #include <util/delay.h>
