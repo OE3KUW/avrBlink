@@ -1,7 +1,7 @@
 /***************************************************************************************
                               a v r.c
 
-                                                                   қuran dez 2022
+                                                                   қuran dez 2023
 **************************************************************************************/
 
 #include <avr/io.h>
@@ -13,7 +13,10 @@
 #define TRUE                    1
 #define FALSE                   0
 
+#define ON_BOARD_LED            0x20   /*..x. ....*/
+
 volatile int flag;
+void delay(int t);
 
 int main(void)
 {
@@ -31,15 +34,14 @@ int main(void)
     while(1)
     {
 //        PORTB = 0xff; 
-//        _delay_ms(500);
+//        _delay_ms(500);millis ist nicht vorhanden! 
 //        PORTB = 0;
 //        _delay_ms(500);
 
         if (flag == TRUE)
         {
             flag = FALSE; 
-
-            PORTB ^= 0xff; // toggle 
+            PORTB ^= ON_BOARD_LED; // toggle 
         }
 
     }
@@ -58,4 +60,10 @@ ISR(TIMER0_OVF_vect)
         count = 0;
         flag = TRUE; 
     }
+}
+
+
+void delay(int t)
+{
+    for(t = 0; t < 200; t++) {asm volatile ("nop"); }
 }
