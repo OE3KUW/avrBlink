@@ -17,7 +17,8 @@
 
 volatile int flag;
 
-void delay(int msec)
+void _wait_64_usec(void);
+void delay(int msec);
 
 int main(void)
 {
