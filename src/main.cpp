@@ -16,7 +16,8 @@
 #define ON_BOARD_LED            0x20   /*..x. ....*/
 
 volatile int flag;
-void delay(int t);
+
+void delay(int msec)
 
 int main(void)
 {
@@ -62,8 +63,16 @@ ISR(TIMER0_OVF_vect)
     }
 }
 
-
-void delay(int t)
+void _wait_64_usec(void)
 {
-    for(t = 0; t < 200; t++) {asm volatile ("nop"); }
+    int i;
+    for(i = 0; i < 200; i++) {asm volatile ("nop"); }
+}
+
+void delay(int msec)
+{
+int long x;
+    x = msec << 4;
+
+    for (; x > 0 ; x--) _wait_64_usec();
 }
