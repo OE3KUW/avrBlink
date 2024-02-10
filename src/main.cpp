@@ -139,7 +139,7 @@ ISR(USART_RX_vect) // Empfang abgeschlossen
 
 
 /*
-Falls es jemand waten sollte hier ein delay einbauen zu wollen, indem er ganz einfach das Include:
+Falls es jemand wagen sollte hier ein delay einbauen zu wollen, indem er ganz einfach das Include:
 
 #include <util/delay.h>
 
