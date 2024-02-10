@@ -143,7 +143,9 @@ Falls es jemand wagen sollte hier ein delay einbauen zu wollen, indem er ganz ei
 
 #include <util/delay.h>
 
-einbaut, habe ich zumindest noch diese Funktion auch noch selbst gebaut. 
+einbaut, dann habe ich zumindest noch diese beiden Funktionen für ihn vorbereitet!
+
+Besser selbst geschrieben ..... 
 
 Hier:
 
