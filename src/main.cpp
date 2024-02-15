@@ -12,7 +12,7 @@
 #define ON_BOARD_LED                   0x20   // PORT B:    ..x. .... 
 #define KEY                            0x04   // PORT D:    .... .x..
 #define TIMER_START_VALUE              0x80
-#define TEN_MSEC                       151
+#define TEN_MSEC                       19 // 151
 #define ONE_SEC                        100    // 1 sec = ONE_SEC x 10 msec
 #define BOUD_RATE_9600                 103
 
@@ -35,8 +35,8 @@ int main(void)
     // Timer Interrupt:
     TIMSK0 = (1 << TOIE0);
 	TCCR0B = (1 << CS00);
-	TCCR0B = (1 << CS01);
-	TCNT0  =  TIMER_START_VALUE;
+	TCCR0B |= (1 << CS01);
+	TCNT0  =  TIMER_START_VALUE; 
 
     // UART:  
     UCSR0B = (1 << RXCIE0) | (1 << RXEN0)  | (1 << TXEN0); // frame format: 8 data, 
@@ -101,11 +101,16 @@ ISR(TIMER0_OVF_vect)
 
     TCNT0 = TIMER_START_VALUE;
     count++;
+
+
     
     if (count > TEN_MSEC) 
     {
         count = 0;
         countOneSec++;
+
+
+
 
         newKey = PIND & KEY;  
 
