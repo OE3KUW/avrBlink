@@ -1,6 +1,6 @@
 /***************************************************************************************
-                                TimerInterrupt 3xHELS
-                                                                      қuran feb 2024
+                                a v r   B l i n k
+                                                                      қuran oct 2024
 **************************************************************************************/
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -10,7 +10,7 @@
 #define HIGH                           1
 #define LOW                            0
 #define ON_BOARD_LED                   0x20   // PORT B:    ..x. .... 
-#define KEY                            0x04   // PORT D:    .... .x..
+#define KEY                            0x01   // PORT B:    .... ...x
 #define TIMER_START_VALUE              0x80
 #define TEN_MSEC                       19 // 151
 #define ONE_SEC                        100    // 1 sec = ONE_SEC x 10 msec
@@ -27,9 +27,10 @@ void writeText(const char * s);
 int main(void)
 {
     // Setup:
-    DDRD = DDRB = 0xff;
-    DDRD &= ~KEY;
-    PORTD |= KEY;
+    DDRB = 0xff;
+    DDRB &= ~KEY;
+    PORTB |= KEY; // internal pull-up-resistor
+    DDRD = 0xfe;  // PORTD-0 = 0 to read! to receive serial commands!
     flag = flagOneSec = FALSE;
 
     // Timer Interrupt:
@@ -67,7 +68,7 @@ int main(void)
         if (flagOneSec)
         {
             flagOneSec = FALSE; 
-            writeText("Elektronik und Technische Informatik ist super!!!"); 
+            writeText("Elektronik und Technische Informatik!!!"); 
         }
     }
     
@@ -98,11 +99,13 @@ ISR(TIMER0_OVF_vect)
     static int count = 0; 
     static int countOneSec = 0;
     static char lastKey = HIGH, newKey = HIGH;
+    static unsigned char ramp = 0;
 
     TCNT0 = TIMER_START_VALUE;
     count++;
+    PORTD = ramp++;
 
-
+  
     
     if (count > TEN_MSEC) 
     {
@@ -110,9 +113,7 @@ ISR(TIMER0_OVF_vect)
         countOneSec++;
 
 
-
-
-        newKey = PIND & KEY;  
+        newKey = PINB & KEY;  
 
         if ((newKey == LOW) && (lastKey != LOW)) // left slope found!
         {
@@ -144,31 +145,23 @@ ISR(USART_RX_vect) // Empfang abgeschlossen
 
 
 /*
-Falls es jemand wagen sollte hier ein delay einbauen zu wollen, indem er ganz einfach das Include:
-
+Für delay() 
+entweder selbst programmieren, zB mit asm volatile ("nop"); 
+oder 
 #include <util/delay.h>
 
-einbaut, dann habe ich zumindest noch diese beiden Funktionen für ihn vorbereitet!
+Zum Programm:
 
-Besser selbst geschrieben ..... 
+An PORTB - Pin 0 sollte ein Taster angeschlossen werden. 
+Mit dem kann die On-Board-Led ein / aus geschalten werden. 
 
-Hier:
+Ebenfalls möglich: im Seriellen Monitor x eingeben. 
 
-void _wait_64_usec(void)
-{
-    int i;
-    for(i = 0; i < 200; i++) {asm volatile ("nop"); }
-}
+Port D kann dazu verwendet werden an einem R2R - Netzwerk 
+(siehe: https://de.wikipedia.org/wiki/R2R-Netzwerk)
+eine Rampe auszugeben. 
 
-void delay(int msec)
-{
-int long x;
-    x = msec << 4;
-
-    for (; x > 0 ; x--) _wait_64_usec();
-}
-
-wehe, das verwendet jemand!!! 
-:-)
-
+Achtung: PORTD - Pin 0 darf nicht verwendet werden 
+- sonst gibts kein Serielles Empfangen mehr. Siehe init!
+PORTD Pin 1 (senden) verursacht Störungen des Rampen-Signals
 */
